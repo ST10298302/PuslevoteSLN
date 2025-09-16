@@ -9,7 +9,7 @@ function App() {
     // Fetch data from backend API
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/test')
+        const response = await axios.get('https://localhost:5000/test')
         setApiData(response.data)
       } catch (error) {
         console.error('Error fetching data:', error)
