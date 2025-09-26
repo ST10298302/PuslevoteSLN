@@ -19,6 +19,13 @@ const Login = ({ onLogin }) => {
     if (error) setError('');
   };
 
+  // Validation functions
+  const isValidEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const isStrongPassword = (password) =>
+    /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(password);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -29,12 +36,17 @@ const Login = ({ onLogin }) => {
       const email = formData.email.trim().toLowerCase();
       const password = formData.password;
 
+      // Basic validation
       if (!email || !password) {
-        throw new Error('Please fill in all fields');
+        throw new Error('Email and password are required.');
       }
 
-      if (!email.includes('@')) {
-        throw new Error('Please enter a valid email address');
+      if (!isValidEmail(email)) {
+        throw new Error('Invalid email format.');
+      }
+
+      if (!isStrongPassword(password)) {
+        throw new Error('Password must be at least 8 characters long and include letters and numbers.');
       }
 
       const response = await axios.post('https://localhost:5000/api/auth/login', {

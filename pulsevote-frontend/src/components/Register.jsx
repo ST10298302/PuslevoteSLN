@@ -22,6 +22,13 @@ const Register = ({ onLogin }) => {
     if (success) setSuccess('');
   };
 
+  // Validation functions
+  const isValidEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const isStrongPassword = (password) =>
+    /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(password);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -34,16 +41,17 @@ const Register = ({ onLogin }) => {
       const password = formData.password;
       const confirmPassword = formData.confirmPassword;
 
+      // Basic validation
       if (!email || !password || !confirmPassword) {
-        throw new Error('Please fill in all fields');
+        throw new Error('Email and password are required.');
       }
 
-      if (!email.includes('@')) {
-        throw new Error('Please enter a valid email address');
+      if (!isValidEmail(email)) {
+        throw new Error('Invalid email format.');
       }
 
-      if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters long');
+      if (!isStrongPassword(password)) {
+        throw new Error('Password must be at least 8 characters long and include letters and numbers.');
       }
 
       if (password !== confirmPassword) {
@@ -127,8 +135,8 @@ const Register = ({ onLogin }) => {
                 className="input input-bordered w-full"
                 required
                 disabled={loading}
-                minLength="6"
-                placeholder="Enter your password (min 6 characters)"
+                minLength="8"
+                placeholder="Enter your password (min 8 characters)"
               />
             </div>
             <div className="form-control">

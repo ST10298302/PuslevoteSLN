@@ -8,14 +8,35 @@ dotenv.config();
 const app = express();
 
 app.use(helmet());
+
+// Content Security Policy (CSP) configuration
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://apis.google.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'", "https://localhost:5000"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    },
+  })
+);
 app.use(cors({
   origin: "https://localhost:5173",
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 }));
 app.use(express.json());
 
 // Import routes and middleware
 const authRoutes = require("./routes/authRoutes");
+const organisationRoutes = require("./routes/organisationRoutes");
+const pollRoutes = require("./routes/pollRoutes");
 const { protect } = require("./middleware/authMiddleware");
 
 app.get('/', (req, res) => {
@@ -33,6 +54,12 @@ app.get('/test', (req, res) => {
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
+
+// Organisation routes
+app.use("/api/organisations", organisationRoutes);
+
+// Poll routes
+app.use("/api/polls", pollRoutes);
 
 // Protected endpoint
 app.get("/api/protected", protect, (req, res) => {
