@@ -7,6 +7,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust proxy for accurate IP detection behind reverse proxies/load balancers
+app.set('trust proxy', 1);
+
 app.use(helmet());
 
 // Content Security Policy (CSP) configuration
@@ -42,6 +45,14 @@ const { protect } = require("./middleware/authMiddleware");
 app.get('/', (req, res) => {
   res.send('PulseVote API running!');
 });
+
+// Health check endpoint
+app.get('/health', (req, res) => 
+  res.status(200).json({
+    ok: true,
+    ts: Date.now()
+  })
+);
 
 // Test endpoint for JSON data
 app.get('/test', (req, res) => {
